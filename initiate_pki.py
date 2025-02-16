@@ -5,6 +5,7 @@ from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 from pki_helpers import sign_csr
 import subprocess
+from server import app
 
 
 def start_uwsgi():
@@ -19,11 +20,11 @@ if __name__ == "__main__":
     generate_public_key(
         private_key,
         filename="ca-public-key.pem",
-        country="US",
-        state="Maryland",
-        locality="Baltimore",
-        org="My CA Company",
-        hostname="my-ca.com",
+        country="BR",
+        state="Brasília",
+        locality="Brasília",
+        org="Minha Autoridade Certificadora",
+        hostname="meu-ca.com.br",
     )
 
     # Gerar a chave privada do servidor
@@ -64,5 +65,8 @@ if __name__ == "__main__":
     # Assinar CSR com a chave privada da CA
     sign_csr(csr, ca_public_key, ca_private_key, "server-public-key.pem")
 
-    # Iniciar o servidor uWSGI
-    start_uwsgi()
+    app.run(
+        ssl_context=("server-public-key.pem", "server-private-key.pem"),
+        host="0.0.0.0",
+        port=5683,
+    )
