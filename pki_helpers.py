@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 from cryptography import x509
 from cryptography.x509.oid import NameOID
 
+
 def generate_private_key(filename: str, passphrase: str):
     private_key = rsa.generate_private_key(
         public_exponent=65537, key_size=2048, backend=default_backend()
@@ -30,9 +31,7 @@ def generate_public_key(private_key, filename, **kwargs):
     subject = x509.Name(
         [
             x509.NameAttribute(NameOID.COUNTRY_NAME, kwargs["country"]),
-            x509.NameAttribute(
-                NameOID.STATE_OR_PROVINCE_NAME, kwargs["state"]
-            ),
+            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, kwargs["state"]),
             x509.NameAttribute(NameOID.LOCALITY_NAME, kwargs["locality"]),
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, kwargs["org"]),
             x509.NameAttribute(NameOID.COMMON_NAME, kwargs["hostname"]),
@@ -55,14 +54,11 @@ def generate_public_key(private_key, filename, **kwargs):
         .serial_number(x509.random_serial_number())
         .not_valid_before(valid_from)
         .not_valid_after(valid_to)
-        .add_extension(x509.BasicConstraints(ca=True,
-            path_length=None), critical=True)
+        .add_extension(x509.BasicConstraints(ca=True, path_length=None), critical=True)
     )
 
     # Sign the certificate with the private key
-    public_key = builder.sign(
-        private_key, hashes.SHA256(), default_backend()
-    )
+    public_key = builder.sign(private_key, hashes.SHA256(), default_backend())
 
     with open(filename, "wb") as certfile:
         certfile.write(public_key.public_bytes(serialization.Encoding.PEM))
@@ -74,9 +70,7 @@ def generate_csr(private_key, filename, **kwargs):
     subject = x509.Name(
         [
             x509.NameAttribute(NameOID.COUNTRY_NAME, kwargs["country"]),
-            x509.NameAttribute(
-                NameOID.STATE_OR_PROVINCE_NAME, kwargs["state"]
-            ),
+            x509.NameAttribute(NameOID.STATE_OR_PROVINCE_NAME, kwargs["state"]),
             x509.NameAttribute(NameOID.LOCALITY_NAME, kwargs["locality"]),
             x509.NameAttribute(NameOID.ORGANIZATION_NAME, kwargs["org"]),
             x509.NameAttribute(NameOID.COMMON_NAME, kwargs["hostname"]),
@@ -101,7 +95,6 @@ def generate_csr(private_key, filename, **kwargs):
         csrfile.write(csr.public_bytes(serialization.Encoding.PEM))
 
     return csr
-
 
 
 def sign_csr(csr, ca_public_key, ca_private_key, new_filename):
